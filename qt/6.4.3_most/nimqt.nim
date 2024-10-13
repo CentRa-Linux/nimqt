@@ -9,10 +9,10 @@ import nimqt/nimqt_paths
 # import nimqt/typeDb
 
 template curFilePath(): string = instantiationInfo(0, fullPaths=true).filename
-{.passc: &"""-std=c++17 -I{curFilePath.parentDir}""".}
 when defined(macosx):
     const QtRoot = nimqt_paths.replace_vars("${Qt_root}", allow_run_time=false, enable_path_check=false)
     {.passL: &"-F{QtRoot} -framework QtCore -framework QtGui -framework QtWidgets -framework QtQmlCore -framework QtQml".}
+    {.passc: &"""-std=c++17 -I{curFilePath.parentDir}""".}
     {.passc: &"-I{QtRoot}/QtWidgets.framework/Headers -I{QtRoot}/QtGui.framework/Headers -I{QtRoot}/QtCore.framework/Headers".}
     {.passc: &"-F{QtRoot}".}
 elif defined(linux) or defined(bsd):
@@ -28,6 +28,7 @@ elif defined(linux) or defined(bsd):
     const QtInstallHeaders = nimqt_paths.replace_vars("${Qt_install_headers}", allow_run_time=false, enable_path_check=false)
     const QtInstallLibs = nimqt_paths.replace_vars("${Qt_install_libs}", allow_run_time=false, enable_path_check=false)
     const QtMajorVersion* = nimqt_paths.replace_vars("${Qt_version}", allow_run_time=false, enable_path_check=false).substr(0,0)
+    {.passc: &"""-std=c++17 -I{curFilePath.parentDir}""".}
     {.passC: &"-I{QtInstallHeaders} -fPIC"}
     {.passC: &"-I{QtInstallHeaders}/QtCore"}
     {.passC: &"-I{QtInstallHeaders}/QtGui"}
@@ -41,7 +42,7 @@ elif defined(linux) or defined(bsd):
 elif defined(windows):
     const QtInstallHeaders = nimqt_paths.replace_vars("${Qt_install_headers}", allow_run_time=false, enable_path_check=false)
     const QtInstallLibs = nimqt_paths.replace_vars("${Qt_install_libs}", allow_run_time=false, enable_path_check=false)
-    {.passC: &"-permissive -Zc=__cplusplus -std=c++17 -I{QtInstallHeaders} -I{QtInstallHeaders}\\QtWidgets -I{QtInstallHeaders}\\QtGui -I{QtInstallHeaders}\\QtCore -I{QtInstallHeaders}\\..\\mkspecs\\win32-msvc /Zc:strictStrings- shell32.lib" .}
+    {.passC: &"-permissive- -Zc:__cplusplus -std:c++17 -I{QtInstallHeaders} -I{QtInstallHeaders}\\QtWidgets -I{QtInstallHeaders}\\QtGui -I{QtInstallHeaders}\\QtCore -I{QtInstallHeaders}\\..\\mkspecs\\win32-msvc /Zc:strictStrings- shell32.lib" .}
     {.passL: &"/link /SUBSYSTEM:WINDOWS shell32.lib".}
     # {.passL: &"--clib:{QtInstallLibs}\Qt6Core".}
     # {.passL: &"--clib:{QtInstallLibs}\Qt6Gui".}
